@@ -1,0 +1,54 @@
+# =============================================================================
+# configs/default_config.yaml - Default Training Configuration
+# =============================================================================
+
+# Environment settings
+num_agents_per_team: 3
+grid_width: 12
+grid_height: 8
+max_steps: 200
+
+# Training settings
+num_episodes: 20000
+update_interval: 10  # Update every N episodes
+buffer_size: 2048
+checkpoint_interval: 1000
+
+# PPO hyperparameters
+ppo_params:
+  lr: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.01
+  max_grad_norm: 0.5
+  ppo_epochs: 4
+  mini_batch_size: 64
+
+# Curriculum learning
+curriculum: false
+curriculum_stages:
+  - name: "1v1 Basics"
+    num_agents_per_team: 1
+    max_steps: 150
+  - name: "2v2 Coordination"
+    num_agents_per_team: 2
+    max_steps: 175
+  - name: "3v3 Full Game"
+    num_agents_per_team: 3
+    max_steps: 200
+
+curriculum_threshold_win_rate: 0.6
+curriculum_threshold_episodes: 200
+
+# Entropy decay
+entropy_decay: true
+entropy_decay_target: 0.001
+entropy_decay_episodes: 20000
+
+# Hardware
+use_gpu: true
+
+# Logging
+log_dir: "runs/"

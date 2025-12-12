@@ -1,0 +1,44 @@
+# Core Dependencies
+torch>=2.0.0
+numpy>=1.24.0
+gymnasium>=0.29.0
+pettingzoo>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+networkx>=3.1
+
+# Logging and Monitoring
+tensorboard>=2.13.0
+pyyaml>=6.0
+
+# Optional but Recommended
+# Google Research Football (for advanced usage)
+# gfootball>=2.10
+
+# Development and Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.7.0
+flake8>=6.1.0
+ipython>=8.14.0
+jupyter>=1.0.0
+notebook>=7.0.0
+
+# Utilities
+tqdm>=4.65.0
+pandas>=2.0.0
+scipy>=1.11.0
+
+# For distributed training (optional)
+# ray[rllib]>=2.6.0
+
+# Installation Note:
+# If you want to use Google Research Football environment:
+# 1. Install system dependencies first (see GRF docs)
+# 2. Uncomment gfootball line above
+# 3. Run: pip install -r requirements.txt
+
+# Minimum Python version: 3.8
+# Recommended Python version: 3.10 or 3.11

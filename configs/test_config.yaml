@@ -1,0 +1,36 @@
+# Test Configuration - Quick Run
+# Environment settings
+num_agents_per_team: 2
+grid_width: 10
+grid_height: 6
+max_steps: 100
+
+# Training settings
+num_episodes: 50  # Short for testing
+update_interval: 5
+buffer_size: 512
+checkpoint_interval: 50
+
+# PPO hyperparameters
+ppo_params:
+  lr: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.01
+  max_grad_norm: 0.5
+  ppo_epochs: 2
+  mini_batch_size: 32
+
+# Curriculum learning
+curriculum: false
+
+# Entropy decay
+entropy_decay: false
+
+# Hardware
+use_gpu: false
+
+# Logging
+log_dir: "runs/"

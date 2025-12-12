@@ -1,0 +1,64 @@
+# =============================================================================
+# configs/curriculum_config.yaml - Curriculum Training Configuration
+# =============================================================================
+
+# Environment settings
+num_agents_per_team: 3  # Will be overridden by curriculum
+grid_width: 12
+grid_height: 8
+max_steps: 200
+
+# Training settings
+num_episodes: 30000  # Longer for curriculum
+update_interval: 10
+buffer_size: 2048
+checkpoint_interval: 2000
+
+# PPO hyperparameters (more conservative for curriculum)
+ppo_params:
+  lr: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.02  # Higher initial exploration
+  max_grad_norm: 0.5
+  ppo_epochs: 4
+  mini_batch_size: 64
+
+# Curriculum learning (enabled)
+curriculum: true
+curriculum_stages:
+  - name: "Stage 1: Ball Control (1v1)"
+    num_agents_per_team: 1
+    max_steps: 100
+    description: "Learn basic movement and shooting"
+    
+  - name: "Stage 2: Basic Passing (2v2)"
+    num_agents_per_team: 2
+    max_steps: 150
+    description: "Learn to pass and coordinate with one teammate"
+    
+  - name: "Stage 3: Team Coordination (2v2)"
+    num_agents_per_team: 2
+    max_steps: 200
+    description: "Master 2v2 before scaling up"
+    
+  - name: "Stage 4: Full Game (3v3)"
+    num_agents_per_team: 3
+    max_steps: 200
+    description: "Complete 3v3 with all strategies"
+
+curriculum_threshold_win_rate: 0.65  # Stricter progression
+curriculum_threshold_episodes: 250
+
+# Entropy decay (coordinated with curriculum)
+entropy_decay: true
+entropy_decay_target: 0.0005
+entropy_decay_episodes: 25000
+
+# Hardware
+use_gpu: true
+
+# Logging
+log_dir: "runs/"

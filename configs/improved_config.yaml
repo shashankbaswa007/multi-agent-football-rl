@@ -1,0 +1,42 @@
+# =============================================================================
+# configs/improved_config.yaml - Optimized Training Configuration
+# Enhanced architecture and hyperparameters for better performance
+# =============================================================================
+
+# Environment settings
+num_agents_per_team: 3
+grid_width: 12
+grid_height: 8
+max_steps: 200
+
+# Training settings
+num_episodes: 25000  # Slightly longer for better convergence
+update_interval: 8  # More frequent updates for faster learning
+buffer_size: 3072  # Larger buffer for more diverse experience
+checkpoint_interval: 500  # More frequent checkpoints
+
+# Enhanced PPO hyperparameters
+ppo_params:
+  lr: 0.0002  # Slightly lower for stability with larger networks
+  gamma: 0.995  # Slightly higher discount for long-term planning
+  gae_lambda: 0.97  # Higher lambda for better advantage estimation
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.015  # Slightly higher for more exploration
+  max_grad_norm: 1.0  # Increased for larger networks
+  ppo_epochs: 6  # More epochs with early stopping
+  mini_batch_size: 128  # Larger batches for stable gradients
+
+# Curriculum learning
+curriculum: false
+
+# Entropy decay (slower decay for sustained exploration)
+entropy_decay: true
+entropy_decay_target: 0.002  # Higher minimum entropy
+entropy_decay_episodes: 22000
+
+# Hardware
+use_gpu: true
+
+# Logging
+log_dir: "runs/"

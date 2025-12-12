@@ -1,0 +1,41 @@
+# =============================================================================
+# configs/quick_improved_test.yaml - Quick Test with Improved Architecture
+# =============================================================================
+
+# Environment settings
+num_agents_per_team: 2
+grid_width: 10
+grid_height: 6
+max_steps: 150
+
+# Training settings
+num_episodes: 200  # Quick test
+update_interval: 5
+buffer_size: 1536
+checkpoint_interval: 100
+
+# Enhanced PPO hyperparameters
+ppo_params:
+  lr: 0.0003
+  gamma: 0.995
+  gae_lambda: 0.97
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.015
+  max_grad_norm: 1.0
+  ppo_epochs: 6
+  mini_batch_size: 128
+
+# Curriculum learning
+curriculum: false
+
+# Entropy decay
+entropy_decay: true
+entropy_decay_target: 0.002
+entropy_decay_episodes: 180
+
+# Hardware
+use_gpu: false
+
+# Logging
+log_dir: "runs/"

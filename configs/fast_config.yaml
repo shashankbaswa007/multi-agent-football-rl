@@ -1,0 +1,41 @@
+# =============================================================================
+# configs/fast_config.yaml - Fast Training for Testing
+# =============================================================================
+
+# Environment settings
+num_agents_per_team: 2  # Smaller for faster training
+grid_width: 10
+grid_height: 6
+max_steps: 150
+
+# Training settings
+num_episodes: 5000  # Fewer episodes
+update_interval: 5  # More frequent updates
+buffer_size: 1024
+checkpoint_interval: 500
+
+# PPO hyperparameters
+ppo_params:
+  lr: 0.0005  # Higher LR for faster learning
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.02
+  max_grad_norm: 0.5
+  ppo_epochs: 3  # Fewer epochs
+  mini_batch_size: 32  # Smaller batches
+
+# Curriculum learning
+curriculum: false
+
+# Entropy decay
+entropy_decay: true
+entropy_decay_target: 0.001
+entropy_decay_episodes: 4000
+
+# Hardware
+use_gpu: true
+
+# Logging
+log_dir: "runs/"

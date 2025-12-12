@@ -1,0 +1,52 @@
+# =============================================================================
+# configs/emergency_fix.yaml - Emergency Fix for Training Stagnation
+# =============================================================================
+# CRITICAL FIXES:
+# 1. Higher entropy (0.08 -> 0.02) to maintain exploration
+# 2. Reduced time penalty in environment (code fix applied)
+# 3. Observation and reward normalization enabled
+# 4. Epsilon-greedy exploration (0.3 -> 0.05)
+# 5. Adjusted hyperparameters for stable learning
+
+# Environment settings
+num_agents_per_team: 2
+grid_width: 10
+grid_height: 6
+max_steps: 150
+
+# Training settings
+num_episodes: 1000  # Longer to observe improvement
+update_interval: 4  # More frequent updates
+buffer_size: 4096  # Larger for diversity
+checkpoint_interval: 100
+
+# Enhanced PPO hyperparameters
+ppo_params:
+  lr: 0.0005  # Slightly higher to escape local minimum
+  gamma: 0.98  # Lower for short episodes (focus near-term)
+  gae_lambda: 0.90  # Reduced to decrease bias in short episodes
+  clip_epsilon: 0.25  # Allow bigger policy updates
+  value_loss_coef: 1.0  # Stronger value learning
+  entropy_coef: 0.08  # CRITICAL: Start high for exploration
+  max_grad_norm: 0.5  # More aggressive clipping
+  ppo_epochs: 10  # More learning per batch
+  mini_batch_size: 64  # Smaller for more updates
+
+# Curriculum learning
+curriculum: false
+
+# Entropy decay - MUCH SLOWER
+entropy_decay: true
+entropy_decay_target: 0.02  # Higher minimum (was 0.002)
+entropy_decay_episodes: 8000  # Much slower decay
+
+# Epsilon-greedy exploration
+epsilon_start: 0.3  # Start with 30% random actions
+epsilon_end: 0.05  # End with 5% random actions
+epsilon_decay_episodes: 5000
+
+# Hardware
+use_gpu: false
+
+# Logging
+log_dir: "runs/"
