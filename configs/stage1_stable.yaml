@@ -1,0 +1,46 @@
+# ===========================================================================
+# Stage 1 Curriculum - STABLE VERSION
+# ===========================================================================
+# Ultra-conservative hyperparameters to prevent catastrophic forgetting
+# Goal: Maintain scoring behavior without forgetting
+
+num_agents_per_team: 1
+grid_width: 8
+grid_height: 4
+max_steps: 100
+
+num_episodes: 500
+update_interval: 4
+buffer_size: 4096
+checkpoint_interval: 50
+
+ppo_params:
+  lr: 0.00003  # 3x lower than stage1_solo to reduce forgetting
+  gamma: 0.95
+  gae_lambda: 0.95
+  clip_epsilon: 0.2  # Tighter clipping (was 0.3)
+  value_loss_coef: 1.0  # Reduce value loss impact (was 2.0)
+  entropy_coef: 0.08  # Lower entropy (was 0.1) for more stability
+  max_grad_norm: 1.0  # Stricter gradient clipping (was 2.0)
+  ppo_epochs: 10
+  mini_batch_size: 64
+
+curriculum: false
+
+entropy_decay: false  # Keep stable
+
+epsilon_start: 0.4
+epsilon_end: 0.1
+epsilon_decay_episodes: 500
+
+use_gpu: false
+
+normalize_observations: true
+normalize_rewards: true
+normalize_advantages: true
+
+log_dir: "runs/"
+log_interval: 20
+
+# 🎯 CURRICULUM MODE: Agent starts close to goal
+use_curriculum: true

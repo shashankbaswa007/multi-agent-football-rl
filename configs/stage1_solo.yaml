@@ -1,0 +1,46 @@
+# ===========================================================================
+# Stage 1: Solo Scoring Practice (1v0 with no opposition)
+# ===========================================================================
+# Goal: Agent learns to move toward goal and shoot
+# Success: 10+ goals in 100 episodes
+
+num_agents_per_team: 1
+grid_width: 8  # Smaller field for easier learning
+grid_height: 4
+max_steps: 100
+
+num_episodes: 300
+update_interval: 4
+buffer_size: 2048
+checkpoint_interval: 50
+
+ppo_params:
+  lr: 0.0001  # Higher LR for faster initial learning
+  gamma: 0.95  # Lower for short-term focus
+  gae_lambda: 0.95
+  clip_epsilon: 0.3
+  value_loss_coef: 2.0
+  entropy_coef: 0.1  # Very high entropy
+  max_grad_norm: 2.0
+  ppo_epochs: 10
+  mini_batch_size: 64
+
+curriculum: false
+
+entropy_decay: false  # Keep exploration high for stage 1
+
+epsilon_start: 0.4  # Moderate exploration
+epsilon_end: 0.2
+epsilon_decay_episodes: 300
+
+use_gpu: false
+
+normalize_observations: true
+normalize_rewards: true
+normalize_advantages: true
+
+log_dir: "runs/"
+log_interval: 20
+
+# 🎯 CURRICULUM MODE: Agent starts close to goal
+use_curriculum: true

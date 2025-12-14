@@ -1,0 +1,545 @@
+"""
+Multi-Agent RL Football Visualization - Streamlit Demo
+======================================================
+
+Interactive visualization dashboard for watching multi-agent reinforcement learning
+agents play football. Features play/pause/step controls, heatmaps, pass networks,
+agent statistics, and reward decomposition.
+
+Run with: streamlit run streamlit_app.py
+"""
+
+import streamlit as st
+import json
+import numpy as np
+import time
+from pathlib import Path
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from collections import defaultdict
+import io
+from PIL import Image, ImageDraw, ImageFont
+import imageio
+
+# Page config
+st.set_page_config(
+    page_title="Multi-Agent RL Football Demo",
+    page_icon="⚽",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Constants
+FIELD_WIDTH = 12
+FIELD_HEIGHT = 8
+CELL_SIZE = 60  # pixels per grid cell
+AGENT_RADIUS = 20
+BALL_RADIUS = 10
+
+# Team colors
+TEAM_COLORS = {
+    0: '#FF4444',  # Red
+    1: '#4444FF'   # Blue
+}
+
+ACTION_NAMES = {
+    0: 'Hold',
+    1: 'Up ↑',
+    2: 'Down ↓',
+    3: 'Left ←',
+    4: 'Right →',
+    5: 'Pass ⚽',
+    6: 'Shoot 🎯'
+}
+
+
+def load_replay(filepath):
+    """Load replay JSON file."""
+    with open(filepath, 'r') as f:
+        return json.load(f)
+
+
+def render_field_frame(timestep_data, show_trails=False, trail_history=None, 
+                       show_heatmap=False, heatmap_data=None, heatmap_team=None,
+                       show_pass_network=False, pass_network_data=None):
+    """
+    Render a single frame of the football field using Plotly.
+    
+    Args:
+        timestep_data: Dict with agents, ball_position, score
+        show_trails: Show agent movement trails
+        trail_history: List of past agent positions
+        show_heatmap: Show position heatmap overlay
+        heatmap_data: Precomputed heatmap data
+        heatmap_team: Team to show heatmap for (0 or 1)
+        show_pass_network: Show pass network overlay
+        pass_network_data: Dict with pass counts between agents
+    """
+    fig = go.Figure()
+    
+    # Draw field
+    fig.add_shape(type="rect", x0=0, y0=0, x1=FIELD_WIDTH, y1=FIELD_HEIGHT,
+                  line=dict(color="green", width=2), fillcolor="lightgreen")
+    
+    # Draw center line
+    fig.add_shape(type="line", x0=FIELD_WIDTH/2, y0=0, 
+                  x1=FIELD_WIDTH/2, y1=FIELD_HEIGHT,
+                  line=dict(color="white", width=2, dash="dash"))
+    
+    # Draw goals
+    goal_width = 2
+    goal_height = FIELD_HEIGHT / 3
+    goal_y = (FIELD_HEIGHT - goal_height) / 2
+    
+    # Left goal (Team 0 attacks this)
+    fig.add_shape(type="rect", x0=-0.3, y0=goal_y, x1=0, y1=goal_y+goal_height,
+                  line=dict(color="white", width=3), fillcolor="rgba(255,255,255,0.3)")
+    
+    # Right goal (Team 1 attacks this)
+    fig.add_shape(type="rect", x0=FIELD_WIDTH, y0=goal_y, 
+                  x1=FIELD_WIDTH+0.3, y1=goal_y+goal_height,
+                  line=dict(color="white", width=3), fillcolor="rgba(255,255,255,0.3)")
+    
+    # Show heatmap if requested
+    if show_heatmap and heatmap_data is not None and heatmap_team is not None:
+        team_heatmap = heatmap_data[heatmap_team]
+        fig.add_trace(go.Heatmap(
+            z=team_heatmap,
+            x=np.linspace(0, FIELD_WIDTH, team_heatmap.shape[1]),
+            y=np.linspace(0, FIELD_HEIGHT, team_heatmap.shape[0]),
+            colorscale='Hot',
+            opacity=0.4,
+            showscale=False,
+            hoverinfo='skip'
+        ))
+    
+    # Show pass network if requested
+    if show_pass_network and pass_network_data:
+        agents = timestep_data['agents']
+        agent_positions = {a['agent_id']: a['position'] for a in agents}
+        
+        for (agent_a, agent_b), count in pass_network_data.items():
+            if agent_a in agent_positions and agent_b in agent_positions:
+                pos_a = agent_positions[agent_a]
+                pos_b = agent_positions[agent_b]
+                
+                # Draw arrow with width proportional to pass count
+                width = min(5, 1 + count * 0.5)
+                fig.add_annotation(
+                    x=pos_b[0], y=pos_b[1],
+                    ax=pos_a[0], ay=pos_a[1],
+                    xref="x", yref="y",
+                    axref="x", ayref="y",
+                    showarrow=True,
+                    arrowhead=2,
+                    arrowsize=1,
+                    arrowwidth=width,
+                    arrowcolor="rgba(255,255,0,0.6)",
+                )
+    
+    # Draw trails if requested
+    if show_trails and trail_history:
+        for agent_id, positions in trail_history.items():
+            if len(positions) > 1:
+                x_coords = [p[0] for p in positions]
+                y_coords = [p[1] for p in positions]
+                fig.add_trace(go.Scatter(
+                    x=x_coords, y=y_coords,
+                    mode='lines',
+                    line=dict(color='rgba(128,128,128,0.3)', width=2),
+                    showlegend=False,
+                    hoverinfo='skip'
+                ))
+    
+    # Draw agents
+    agents = timestep_data['agents']
+    for agent in agents:
+        pos = agent['position']
+        team = agent['team']
+        has_ball = agent.get('has_ball', False)
+        
+        # Agent circle
+        color = TEAM_COLORS[team]
+        size = 25 if has_ball else 20
+        
+        fig.add_trace(go.Scatter(
+            x=[pos[0]], y=[pos[1]],
+            mode='markers+text',
+            marker=dict(
+                size=size,
+                color=color,
+                line=dict(color='yellow' if has_ball else 'white', width=3 if has_ball else 1)
+            ),
+            text=agent['agent_id'].split('_')[-1],  # Show agent number
+            textposition="middle center",
+            textfont=dict(color='white', size=10, family='Arial Black'),
+            name=agent['agent_id'],
+            hovertemplate=f"<b>{agent['agent_id']}</b><br>" +
+                         f"Team: {team}<br>" +
+                         f"Position: ({pos[0]:.1f}, {pos[1]:.1f})<br>" +
+                         f"Action: {agent['action_name']}<br>" +
+                         f"Reward: {agent['reward']:.2f}<br>" +
+                         "<extra></extra>",
+            showlegend=False
+        ))
+    
+    # Draw ball (if no agent has it, show as separate)
+    ball_pos = timestep_data['ball_position']
+    fig.add_trace(go.Scatter(
+        x=[ball_pos[0]], y=[ball_pos[1]],
+        mode='markers',
+        marker=dict(size=12, color='white', line=dict(color='black', width=2)),
+        name='Ball',
+        hoverinfo='skip',
+        showlegend=False
+    ))
+    
+    # Scoreboard
+    score = timestep_data['score']
+    fig.add_annotation(
+        text=f"Team 0: {score[0]}  |  Team 1: {score[1]}",
+        xref="paper", yref="paper",
+        x=0.5, y=1.05,
+        showarrow=False,
+        font=dict(size=20, color="black", family="Arial Black"),
+        bgcolor="rgba(255,255,255,0.8)",
+        bordercolor="black",
+        borderwidth=2
+    )
+    
+    # Layout
+    fig.update_layout(
+        width=FIELD_WIDTH * CELL_SIZE,
+        height=FIELD_HEIGHT * CELL_SIZE + 50,
+        xaxis=dict(range=[-0.5, FIELD_WIDTH+0.5], showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(range=[-0.5, FIELD_HEIGHT+0.5], showgrid=False, zeroline=False, showticklabels=False),
+        plot_bgcolor='lightgreen',
+        margin=dict(l=10, r=10, t=60, b=10),
+        hovermode='closest'
+    )
+    
+    return fig
+
+
+def compute_heatmap(replay_data, grid_size=20):
+    """Compute position heatmap for each team from replay data."""
+    timesteps = replay_data['timesteps']
+    
+    heatmaps = {
+        0: np.zeros((grid_size, grid_size)),
+        1: np.zeros((grid_size, grid_size))
+    }
+    
+    for ts in timesteps:
+        for agent in ts['agents']:
+            team = agent['team']
+            pos = agent['position']
+            
+            # Convert to grid coordinates
+            x_idx = int((pos[0] / FIELD_WIDTH) * grid_size)
+            y_idx = int((pos[1] / FIELD_HEIGHT) * grid_size)
+            
+            x_idx = max(0, min(grid_size-1, x_idx))
+            y_idx = max(0, min(grid_size-1, y_idx))
+            
+            heatmaps[team][y_idx, x_idx] += 1
+    
+    # Normalize
+    for team in [0, 1]:
+        max_val = heatmaps[team].max()
+        if max_val > 0:
+            heatmaps[team] = heatmaps[team] / max_val
+    
+    return heatmaps
+
+
+def compute_pass_network(replay_data):
+    """Compute pass network (agent -> agent pass counts)."""
+    timesteps = replay_data['timesteps']
+    pass_counts = defaultdict(int)
+    
+    for i in range(len(timesteps) - 1):
+        ts = timesteps[i]
+        
+        for agent in ts['agents']:
+            if agent['action_name'] == 'Pass ⚽':
+                # Find who receives the pass (next timestep, teammate with ball)
+                next_ts = timesteps[i + 1]
+                passer_team = agent['team']
+                passer_id = agent['agent_id']
+                
+                for next_agent in next_ts['agents']:
+                    if next_agent['team'] == passer_team and next_agent.get('has_ball', False):
+                        receiver_id = next_agent['agent_id']
+                        if receiver_id != passer_id:
+                            pass_counts[(passer_id, receiver_id)] += 1
+                        break
+    
+    return dict(pass_counts)
+
+
+def compute_agent_stats(replay_data):
+    """Compute per-agent statistics across the replay."""
+    timesteps = replay_data['timesteps']
+    agent_stats = defaultdict(lambda: {
+        'total_reward': 0,
+        'pass_count': 0,
+        'shot_count': 0,
+        'possession_time': 0,
+        'actions': defaultdict(int)
+    })
+    
+    for ts in timesteps:
+        for agent in ts['agents']:
+            agent_id = agent['agent_id']
+            stats = agent_stats[agent_id]
+            
+            stats['total_reward'] += agent['reward']
+            stats['actions'][agent['action_name']] += 1
+            
+            if agent['action_name'] == 'Pass ⚽':
+                stats['pass_count'] += 1
+            if agent['action_name'] == 'Shoot 🎯':
+                stats['shot_count'] += 1
+            if agent.get('has_ball', False):
+                stats['possession_time'] += 1
+    
+    return dict(agent_stats)
+
+
+def generate_gif(replay_data, output_path, fps=10):
+    """Generate GIF from replay data."""
+    timesteps = replay_data['timesteps']
+    frames = []
+    
+    for ts in timesteps:
+        # Create PIL image
+        img_width = FIELD_WIDTH * CELL_SIZE
+        img_height = FIELD_HEIGHT * CELL_SIZE + 50
+        img = Image.new('RGB', (img_width, img_height), color='lightgreen')
+        draw = ImageDraw.Draw(img)
+        
+        # Draw field border
+        draw.rectangle([0, 0, img_width-1, img_height-51], outline='darkgreen', width=3)
+        
+        # Draw center line
+        draw.line([img_width//2, 0, img_width//2, img_height-50], fill='white', width=2)
+        
+        # Draw agents
+        for agent in ts['agents']:
+            pos = agent['position']
+            team = agent['team']
+            has_ball = agent.get('has_ball', False)
+            
+            x = int(pos[0] * CELL_SIZE)
+            y = int(pos[1] * CELL_SIZE)
+            
+            color = 'red' if team == 0 else 'blue'
+            outline = 'yellow' if has_ball else 'white'
+            width = 3 if has_ball else 1
+            
+            draw.ellipse([x-AGENT_RADIUS, y-AGENT_RADIUS, 
+                         x+AGENT_RADIUS, y+AGENT_RADIUS],
+                        fill=color, outline=outline, width=width)
+        
+        # Draw ball
+        ball_pos = ts['ball_position']
+        ball_x = int(ball_pos[0] * CELL_SIZE)
+        ball_y = int(ball_pos[1] * CELL_SIZE)
+        draw.ellipse([ball_x-BALL_RADIUS, ball_y-BALL_RADIUS,
+                     ball_x+BALL_RADIUS, ball_y+BALL_RADIUS],
+                    fill='white', outline='black', width=2)
+        
+        # Draw score
+        score = ts['score']
+        draw.text((img_width//2, img_height-30), f"Team 0: {score[0]}  |  Team 1: {score[1]}",
+                 fill='black', anchor='mm')
+        
+        frames.append(np.array(img))
+    
+    # Save GIF
+    imageio.mimsave(output_path, frames, fps=fps)
+    return output_path
+
+
+# ============================================================================
+# MAIN APP
+# ============================================================================
+
+def main():
+    st.title("⚽ Multi-Agent RL Football Visualization")
+    st.markdown("*Watch AI agents learn to play football together*")
+    
+    # Sidebar controls
+    st.sidebar.header("🎮 Controls")
+    
+    # Replay selection
+    replay_dir = Path("replays")
+    replay_files = list(replay_dir.glob("*.json"))
+    
+    if not replay_files:
+        st.error("No replay files found in 'replays/' directory. Generate some first!")
+        return
+    
+    replay_file = st.sidebar.selectbox(
+        "Select Replay",
+        replay_files,
+        format_func=lambda x: x.name
+    )
+    
+    # Load replay
+    if 'replay_data' not in st.session_state or st.session_state.get('current_replay') != str(replay_file):
+        st.session_state.replay_data = load_replay(replay_file)
+        st.session_state.current_replay = str(replay_file)
+        st.session_state.current_step = 0
+        st.session_state.playing = False
+        st.session_state.trail_history = defaultdict(list)
+        st.session_state.heatmaps = compute_heatmap(st.session_state.replay_data)
+        st.session_state.pass_network = compute_pass_network(st.session_state.replay_data)
+        st.session_state.agent_stats = compute_agent_stats(st.session_state.replay_data)
+    
+    replay_data = st.session_state.replay_data
+    metadata = replay_data['metadata']
+    timesteps = replay_data['timesteps']
+    total_steps = len(timesteps)
+    
+    # Display metadata
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 Replay Info")
+    st.sidebar.write(f"**Scenario:** {metadata['scenario']}")
+    st.sidebar.write(f"**Total Steps:** {total_steps}")
+    st.sidebar.write(f"**Final Score:** {metadata['final_score'][0]} - {metadata['final_score'][1]}")
+    winner = metadata.get('winner')
+    if winner is not None:
+        st.sidebar.write(f"**Winner:** Team {winner} 🏆")
+    else:
+        st.sidebar.write("**Winner:** Draw")
+    
+    # Playback controls
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### ⏯️ Playback")
+    
+    col1, col2, col3 = st.sidebar.columns(3)
+    
+    with col1:
+        if st.button("⏮️ Reset"):
+            st.session_state.current_step = 0
+            st.session_state.playing = False
+            st.session_state.trail_history = defaultdict(list)
+    
+    with col2:
+        if st.button("⏸️ Pause" if st.session_state.playing else "▶️ Play"):
+            st.session_state.playing = not st.session_state.playing
+    
+    with col3:
+        if st.button("⏭️ Step"):
+            st.session_state.current_step = min(st.session_state.current_step + 1, total_steps - 1)
+            st.session_state.playing = False
+    
+    # Speed control
+    speed = st.sidebar.slider("Playback Speed", 0.1, 3.0, 1.0, 0.1)
+    fps = int(10 * speed)
+    
+    # Step slider
+    st.session_state.current_step = st.sidebar.slider(
+        "Current Step",
+        0, total_steps - 1,
+        st.session_state.current_step
+    )
+    
+    # Visualization options
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🎨 Visualization")
+    
+    show_trails = st.sidebar.checkbox("Show Trails", value=False)
+    show_heatmap = st.sidebar.checkbox("Show Heatmap", value=False)
+    if show_heatmap:
+        heatmap_team = st.sidebar.radio("Heatmap Team", [0, 1])
+    else:
+        heatmap_team = None
+    
+    show_pass_network = st.sidebar.checkbox("Show Pass Network", value=False)
+    
+    # Export options
+    st.sidebar.markdown("---")
+    if st.sidebar.button("💾 Export Replay as GIF"):
+        with st.spinner("Generating GIF..."):
+            gif_path = f"replays/{metadata['replay_id']}.gif"
+            generate_gif(replay_data, gif_path, fps=10)
+            st.sidebar.success(f"Saved to {gif_path}")
+    
+    # Main content area
+    current_step = st.session_state.current_step
+    timestep_data = timesteps[current_step]
+    
+    # Update trail history
+    if show_trails:
+        for agent in timestep_data['agents']:
+            agent_id = agent['agent_id']
+            st.session_state.trail_history[agent_id].append(agent['position'])
+            # Keep only last 20 positions
+            if len(st.session_state.trail_history[agent_id]) > 20:
+                st.session_state.trail_history[agent_id].pop(0)
+    
+    # Render field
+    fig = render_field_frame(
+        timestep_data,
+        show_trails=show_trails,
+        trail_history=st.session_state.trail_history if show_trails else None,
+        show_heatmap=show_heatmap,
+        heatmap_data=st.session_state.heatmaps if show_heatmap else None,
+        heatmap_team=heatmap_team,
+        show_pass_network=show_pass_network,
+        pass_network_data=st.session_state.pass_network if show_pass_network else None
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Agent details and stats
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### 👥 Agent States")
+        for agent in timestep_data['agents']:
+            team_color = "🔴" if agent['team'] == 0 else "🔵"
+            ball_icon = "⚽" if agent.get('has_ball', False) else ""
+            st.markdown(
+                f"**{team_color} {agent['agent_id']}** {ball_icon}  \n"
+                f"Action: {agent['action_name']} | Reward: {agent['reward']:.3f}"
+            )
+    
+    with col2:
+        st.markdown("### 📈 Reward Breakdown")
+        breakdown = timestep_data.get('reward_breakdown', {})
+        for key, value in breakdown.items():
+            st.write(f"**{key}:** {value:.2f}")
+    
+    # Agent statistics table
+    st.markdown("---")
+    st.markdown("### 📊 Cumulative Agent Statistics")
+    
+    stats = st.session_state.agent_stats
+    stats_data = []
+    for agent_id, agent_stats in stats.items():
+        stats_data.append({
+            'Agent': agent_id,
+            'Total Reward': f"{agent_stats['total_reward']:.2f}",
+            'Passes': agent_stats['pass_count'],
+            'Shots': agent_stats['shot_count'],
+            'Possession Time': agent_stats['possession_time']
+        })
+    
+    st.table(stats_data)
+    
+    # Auto-play logic
+    if st.session_state.playing:
+        time.sleep(1.0 / fps)
+        if st.session_state.current_step < total_steps - 1:
+            st.session_state.current_step += 1
+            st.rerun()
+        else:
+            st.session_state.playing = False
+
+
+if __name__ == "__main__":
+    main()

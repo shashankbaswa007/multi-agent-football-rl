@@ -289,6 +289,8 @@ class PPOAgent:
         clip_epsilon=0.2,
         value_loss_coef=0.5,
         entropy_coef=0.01,
+        entropy_decay_episodes=None,
+        entropy_decay_target=None,
         max_grad_norm=0.5,
         ppo_epochs=4,
         mini_batch_size=64,
@@ -301,10 +303,14 @@ class PPOAgent:
         self.clip_epsilon = clip_epsilon
         self.value_loss_coef = value_loss_coef
         self.entropy_coef = entropy_coef
+        self.initial_entropy_coef = entropy_coef
+        self.entropy_decay_episodes = entropy_decay_episodes
+        self.entropy_decay_target = entropy_decay_target if entropy_decay_target is not None else entropy_coef * 0.1
         self.max_grad_norm = max_grad_norm
         self.ppo_epochs = ppo_epochs
         self.mini_batch_size = mini_batch_size
         self.target_kl = target_kl  # Early stopping based on KL divergence
+        self.episode_count = 0
         
         # Enhanced networks with residual connections
         self.actor = Actor(obs_dim, action_dim, hidden_dims=[512, 512], use_residual=True).to(device)
@@ -375,6 +381,17 @@ class PPOAgent:
             return reward
         self.reward_rms.update(np.array([reward]))
         return np.clip(reward / np.sqrt(self.reward_rms.var + 1e-8), -self.clip_reward, self.clip_reward)
+    
+    def update_entropy_coefficient(self):
+        """Update entropy coefficient with linear decay over episodes"""
+        if self.entropy_decay_episodes is not None and self.episode_count < self.entropy_decay_episodes:
+            # Linear decay from initial_entropy_coef to entropy_decay_target
+            decay_fraction = self.episode_count / self.entropy_decay_episodes
+            self.entropy_coef = self.initial_entropy_coef + (self.entropy_decay_target - self.initial_entropy_coef) * decay_fraction
+        elif self.entropy_decay_episodes is not None:
+            # After decay period, use target entropy
+            self.entropy_coef = self.entropy_decay_target
+        self.episode_count += 1
     
     def get_action(self, obs, deterministic=False):
         """Get action from policy with optional epsilon-greedy exploration"""

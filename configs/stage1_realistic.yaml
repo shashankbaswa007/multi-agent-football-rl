@@ -1,0 +1,54 @@
+# Stage 1: Curriculum Learning with REALISTIC Football Mechanics
+# Agents start at midfield (4-5 units from goal)
+# Must dribble forward step-by-step
+# Can only shoot within 4 units of goal
+
+# Environment settings
+num_agents_per_team: 1
+grid_width: 8
+grid_height: 4
+max_steps: 200  # Increased for realistic progression
+
+# Training settings
+num_episodes: 500
+batch_size: 64
+buffer_size: 2048
+update_interval: 50
+checkpoint_interval: 25
+
+# Curriculum learning (use EasyStartEnv wrapper)
+use_curriculum: true
+curriculum: false
+entropy_decay: false
+
+# Exploration parameters
+epsilon_start: 0.0
+epsilon_end: 0.0
+epsilon_decay_episodes: 500
+
+# Normalization
+normalize_observations: true
+normalize_rewards: true
+normalize_advantages: true
+
+# PPO hyperparameters - optimized for realistic mechanics
+ppo_params:
+  lr: 0.00003  # Stable learning rate
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.08  # High exploration for learning new behaviors
+  entropy_decay_episodes: 300
+  entropy_decay_target: 0.01
+  max_grad_norm: 0.5
+  ppo_epochs: 10
+  mini_batch_size: 64
+
+# Hardware
+use_gpu: false
+
+# Logging
+log_dir: "runs/"
+log_interval: 10
+save_interval: 25

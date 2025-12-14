@@ -1,0 +1,265 @@
+Using device: cpu
+🎯 Using EASY START curriculum environment
+Starting training for 300 episodes
+Update interval: 4 episodes
+  Early stopping at epoch 3/10 due to high KL divergence: 0.3828
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4852
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7662
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6584
+Checkpoint saved: runs/run_20251212_232645/checkpoints/best_model.pt
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4607
+  Early stopping at epoch 3/10 due to high KL divergence: 0.4174
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2521
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6799
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3132
+  Early stopping at epoch 1/10 due to high KL divergence: 3.2963
+Episode 20/300
+  Team 0 Reward: 48.92
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0653
+  Entropy Coef: 0.1000
+  Epsilon: 0.3867
+  Early stopping at epoch 1/10 due to high KL divergence: 2.5555
+  Early stopping at epoch 1/10 due to high KL divergence: 2.7442
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0277
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0656
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2507
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8893
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1409
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6155
+Episode 40/300
+  Team 0 Reward: 82.90
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.2175
+  Entropy Coef: 0.1000
+  Epsilon: 0.3733
+  Early stopping at epoch 1/10 due to high KL divergence: 0.0453
+  Early stopping at epoch 1/10 due to high KL divergence: 2.9415
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4341
+  Early stopping at epoch 1/10 due to high KL divergence: 2.4759
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_50.pt
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3606
+  Early stopping at epoch 1/10 due to high KL divergence: 1.3780
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8472
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2827
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4414
+  Early stopping at epoch 1/10 due to high KL divergence: 1.6721
+Episode 60/300
+  Team 0 Reward: 1589.69
+  Win Rate: 25.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.1634
+  Entropy Coef: 0.1000
+  Epsilon: 0.3600
+  Early stopping at epoch 1/10 due to high KL divergence: 0.0913
+  Early stopping at epoch 1/10 due to high KL divergence: 1.2946
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3787
+  Early stopping at epoch 1/10 due to high KL divergence: 0.5627
+  Early stopping at epoch 1/10 due to high KL divergence: 2.7038
+  Early stopping at epoch 1/10 due to high KL divergence: 1.1400
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4133
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4008
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7509
+  Early stopping at epoch 1/10 due to high KL divergence: 1.2730
+Episode 80/300
+  Team 0 Reward: 196.84
+  Win Rate: 25.00%
+  Pass Success: 0.00%
+  Policy Loss: 0.1811
+  Entropy Coef: 0.1000
+  Epsilon: 0.3467
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2560
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2049
+  Early stopping at epoch 4/10 due to high KL divergence: 0.1371
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6309
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4391
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3227
+  Early stopping at epoch 1/10 due to high KL divergence: 1.3603
+  Early stopping at epoch 1/10 due to high KL divergence: 0.9724
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2749
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0390
+Episode 100/300
+  Team 0 Reward: 18.20
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: 0.0410
+  Entropy Coef: 0.1000
+  Epsilon: 0.3333
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_100.pt
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4903
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7827
+  Early stopping at epoch 1/10 due to high KL divergence: 1.1963
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3472
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3735
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1295
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2356
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0021
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6778
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2537
+Episode 120/300
+  Team 0 Reward: -8.21
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: 0.0286
+  Entropy Coef: 0.1000
+  Epsilon: 0.3200
+  Early stopping at epoch 1/10 due to high KL divergence: 1.3626
+  Early stopping at epoch 1/10 due to high KL divergence: 1.2124
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6467
+  Early stopping at epoch 1/10 due to high KL divergence: 2.1480
+  Early stopping at epoch 1/10 due to high KL divergence: 0.5924
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4681
+  Early stopping at epoch 1/10 due to high KL divergence: 0.5738
+  Early stopping at epoch 1/10 due to high KL divergence: 1.1806
+  Early stopping at epoch 1/10 due to high KL divergence: 0.8146
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6859
+Episode 140/300
+  Team 0 Reward: -47.55
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0502
+  Entropy Coef: 0.1000
+  Epsilon: 0.3067
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3089
+  Early stopping at epoch 1/10 due to high KL divergence: 0.8957
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2930
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3925
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_150.pt
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3714
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7616
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0656
+  Early stopping at epoch 1/10 due to high KL divergence: 1.2096
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3568
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2890
+Episode 160/300
+  Team 0 Reward: 351.26
+  Win Rate: 25.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0319
+  Entropy Coef: 0.1000
+  Epsilon: 0.2933
+  Early stopping at epoch 1/10 due to high KL divergence: 0.5228
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1324
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0707
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4766
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7244
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8569
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7954
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1878
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1435
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4171
+Episode 180/300
+  Team 0 Reward: 108.00
+  Win Rate: 25.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0182
+  Entropy Coef: 0.1000
+  Epsilon: 0.2800
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0711
+  Early stopping at epoch 1/10 due to high KL divergence: 1.2390
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8420
+  Early stopping at epoch 1/10 due to high KL divergence: 0.8810
+  Early stopping at epoch 1/10 due to high KL divergence: 0.8457
+  Early stopping at epoch 1/10 due to high KL divergence: 1.1575
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4349
+  Early stopping at epoch 3/10 due to high KL divergence: 0.0538
+  Early stopping at epoch 1/10 due to high KL divergence: 0.8275
+  Early stopping at epoch 3/10 due to high KL divergence: 0.1571
+Episode 200/300
+  Team 0 Reward: 490.07
+  Win Rate: 25.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0507
+  Entropy Coef: 0.1000
+  Epsilon: 0.2667
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_200.pt
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7968
+  Early stopping at epoch 6/10 due to high KL divergence: 0.0430
+  Early stopping at epoch 1/10 due to high KL divergence: 0.0522
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2034
+  Early stopping at epoch 1/10 due to high KL divergence: 2.4756
+  Early stopping at epoch 1/10 due to high KL divergence: 2.3136
+  Early stopping at epoch 9/10 due to high KL divergence: 0.0304
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1650
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6830
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7352
+Episode 220/300
+  Team 0 Reward: -8.18
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.1479
+  Entropy Coef: 0.1000
+  Epsilon: 0.2533
+  Early stopping at epoch 1/10 due to high KL divergence: 0.4885
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3550
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3912
+  Early stopping at epoch 1/10 due to high KL divergence: 2.1600
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2526
+  Early stopping at epoch 1/10 due to high KL divergence: 1.1379
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7088
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4266
+  Early stopping at epoch 1/10 due to high KL divergence: 0.9400
+Episode 240/300
+  Team 0 Reward: 109.35
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: 0.0303
+  Entropy Coef: 0.1000
+  Epsilon: 0.2400
+  Early stopping at epoch 1/10 due to high KL divergence: 0.9574
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8627
+  Early stopping at epoch 1/10 due to high KL divergence: 1.0378
+  Early stopping at epoch 1/10 due to high KL divergence: 0.0360
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_250.pt
+  Early stopping at epoch 6/10 due to high KL divergence: 0.1358
+  Early stopping at epoch 1/10 due to high KL divergence: 3.2970
+  Early stopping at epoch 1/10 due to high KL divergence: 1.8374
+  Early stopping at epoch 1/10 due to high KL divergence: 1.6613
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7845
+  Early stopping at epoch 1/10 due to high KL divergence: 1.4005
+Episode 260/300
+  Team 0 Reward: 1.84
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: 0.1724
+  Entropy Coef: 0.1000
+  Epsilon: 0.2267
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7304
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6842
+  Early stopping at epoch 1/10 due to high KL divergence: 1.3714
+  Early stopping at epoch 1/10 due to high KL divergence: 2.6516
+  Early stopping at epoch 1/10 due to high KL divergence: 0.9659
+  Early stopping at epoch 8/10 due to high KL divergence: 0.0597
+  Early stopping at epoch 1/10 due to high KL divergence: 0.1854
+  Early stopping at epoch 1/10 due to high KL divergence: 0.0973
+  Early stopping at epoch 1/10 due to high KL divergence: 1.7642
+  Early stopping at epoch 1/10 due to high KL divergence: 3.2742
+Episode 280/300
+  Team 0 Reward: 4.37
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.0353
+  Entropy Coef: 0.1000
+  Epsilon: 0.2133
+  Early stopping at epoch 1/10 due to high KL divergence: 2.9096
+  Early stopping at epoch 1/10 due to high KL divergence: 0.7318
+  Early stopping at epoch 1/10 due to high KL divergence: 0.3739
+  Early stopping at epoch 1/10 due to high KL divergence: 0.2910
+  Early stopping at epoch 1/10 due to high KL divergence: 2.1175
+  Early stopping at epoch 1/10 due to high KL divergence: 1.9439
+  Early stopping at epoch 1/10 due to high KL divergence: 0.6859
+  Early stopping at epoch 1/10 due to high KL divergence: 1.6979
+  Early stopping at epoch 1/10 due to high KL divergence: 3.4017
+Episode 300/300
+  Team 0 Reward: 2.37
+  Win Rate: 0.00%
+  Pass Success: 0.00%
+  Policy Loss: -0.1883
+  Entropy Coef: 0.1000
+  Epsilon: 0.2000
+Checkpoint saved: runs/run_20251212_232645/checkpoints/episode_300.pt
+Checkpoint saved: runs/run_20251212_232645/checkpoints/final_model.pt
+
+Training complete!

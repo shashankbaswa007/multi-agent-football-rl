@@ -1,0 +1,56 @@
+# Training Configuration for Improved Football Environment
+# This config uses the redesigned environment with proper behaviors
+
+# Environment settings
+num_agents_per_team: 2
+grid_width: 10
+grid_height: 6
+max_steps: 200
+movement_speed: 0.5
+shoot_range: 3.0
+pass_range: 4.0
+
+# Training settings
+num_episodes: 1000
+batch_size: 64
+buffer_size: 4096
+update_interval: 10
+checkpoint_interval: 50
+
+# Use improved environment
+use_improved_env: true
+use_curriculum: false
+curriculum: false
+entropy_decay: false
+
+# Exploration parameters
+epsilon_start: 0.1
+epsilon_end: 0.01
+epsilon_decay_episodes: 500
+
+# Normalization
+normalize_observations: true
+normalize_rewards: true
+normalize_advantages: true
+
+# PPO hyperparameters - optimized for improved environment
+ppo_params:
+  lr: 0.0003  # Higher learning rate for faster learning
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.1  # High exploration to learn behaviors
+  entropy_decay_episodes: 600
+  entropy_decay_target: 0.02
+  max_grad_norm: 0.5
+  ppo_epochs: 10
+  mini_batch_size: 64
+
+# Hardware
+use_gpu: false
+
+# Logging
+log_dir: "runs/"
+log_interval: 10
+save_interval: 50

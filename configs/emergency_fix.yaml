@@ -8,42 +8,42 @@
 # 4. Epsilon-greedy exploration (0.3 -> 0.05)
 # 5. Adjusted hyperparameters for stable learning
 
-# Environment settings
-num_agents_per_team: 2
+# Environment settings - SIMPLIFIED to 1v1 for initial learning
+num_agents_per_team: 1
 grid_width: 10
 grid_height: 6
-max_steps: 150
+max_steps: 100
 
 # Training settings
-num_episodes: 1000  # Longer to observe improvement
+num_episodes: 2000  # More episodes for 1v1 curriculum
 update_interval: 4  # More frequent updates
-buffer_size: 4096  # Larger for diversity
+buffer_size: 2048  # Smaller for 1v1
 checkpoint_interval: 100
 
-# Enhanced PPO hyperparameters
+# Enhanced PPO hyperparameters - STABILITY FIXES
 ppo_params:
-  lr: 0.0005  # Slightly higher to escape local minimum
-  gamma: 0.98  # Lower for short episodes (focus near-term)
-  gae_lambda: 0.90  # Reduced to decrease bias in short episodes
-  clip_epsilon: 0.25  # Allow bigger policy updates
-  value_loss_coef: 1.0  # Stronger value learning
-  entropy_coef: 0.08  # CRITICAL: Start high for exploration
-  max_grad_norm: 0.5  # More aggressive clipping
-  ppo_epochs: 10  # More learning per batch
-  mini_batch_size: 64  # Smaller for more updates
+  lr: 0.00005  # 🔥 CRITICAL: 6x reduction to prevent policy collapse
+  gamma: 0.98  # Focus on near-term rewards
+  gae_lambda: 0.95  # Balanced advantage estimation
+  clip_epsilon: 0.3  # 🔥 Increased to allow necessary updates
+  value_loss_coef: 2.0  # 🔥 DOUBLED for stronger value learning
+  entropy_coef: 0.08  # 🔥 INCREASED to 8% for strong exploration
+  max_grad_norm: 2.0  # 🔥 Increased to allow larger gradient steps
+  ppo_epochs: 10  # Learning iterations per batch
+  mini_batch_size: 64  # Smaller for 1v1
 
 # Curriculum learning
 curriculum: false
 
-# Entropy decay - MUCH SLOWER
+# Entropy decay - VERY SLOW for 1v1 curriculum
 entropy_decay: true
-entropy_decay_target: 0.02  # Higher minimum (was 0.002)
-entropy_decay_episodes: 8000  # Much slower decay
+entropy_decay_target: 0.02  # Keep higher minimum for exploration
+entropy_decay_episodes: 8000  # Very slow decay
 
-# Epsilon-greedy exploration
-epsilon_start: 0.3  # Start with 30% random actions
-epsilon_end: 0.05  # End with 5% random actions
-epsilon_decay_episodes: 5000
+# Epsilon-greedy exploration - AGGRESSIVE
+epsilon_start: 0.5  # Start with 50% random actions (very high!)
+epsilon_end: 0.15  # End with 15% random actions
+epsilon_decay_episodes: 8000  # Very slow decay
 
 # Hardware
 use_gpu: false

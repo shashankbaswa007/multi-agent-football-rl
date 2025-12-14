@@ -1,0 +1,57 @@
+# =============================================================================
+# configs/stable_learning.yaml - Optimized for PPO Stability
+# =============================================================================
+# CRITICAL FIXES from training analysis:
+# 1. Lower learning rate (0.0001) to prevent high KL divergence
+# 2. Simplified 1v1 mode for initial learning
+# 3. Increased value loss coefficient for better critic learning
+# 4. Relaxed clip range to allow necessary policy updates
+
+# Environment settings - SIMPLIFIED
+num_agents_per_team: 1  # 1v1 mode - simpler than 2v2
+grid_width: 10
+grid_height: 6
+max_steps: 75  # Shorter episodes for faster learning
+
+# Training settings
+num_episodes: 2000  # More episodes for 1v1 curriculum
+update_interval: 4
+buffer_size: 2048  # Smaller for 1v1
+checkpoint_interval: 100
+
+# OPTIMIZED PPO hyperparameters for stability
+ppo_params:
+  lr: 0.0001  # 🔥 REDUCED: Prevents large policy changes (was 0.0003)
+  gamma: 0.98  # Focus on near-term rewards
+  gae_lambda: 0.95
+  clip_epsilon: 0.3  # 🔥 INCREASED: Allow bigger updates (was 0.2)
+  value_loss_coef: 1.5  # 🔥 INCREASED: Stronger value learning (was 0.5)
+  entropy_coef: 0.05  # High for exploration
+  max_grad_norm: 1.0  # 🔥 INCREASED: Allow larger gradient steps (was 0.5)
+  ppo_epochs: 10
+  mini_batch_size: 64  # Smaller for 1v1
+
+# Curriculum learning
+curriculum: false  # Manual 1v1 stage
+
+# Entropy decay - GRADUAL
+entropy_decay: true
+entropy_decay_target: 0.01  # Decay to higher minimum for 1v1
+entropy_decay_episodes: 2000
+
+# Epsilon-greedy exploration
+epsilon_start: 0.3
+epsilon_end: 0.1
+epsilon_decay_episodes: 1500
+
+# Hardware
+use_gpu: false
+
+# Normalization
+normalize_observations: true
+normalize_rewards: true
+normalize_advantages: true
+
+# Logging
+tensorboard_dir: runs
+log_interval: 20

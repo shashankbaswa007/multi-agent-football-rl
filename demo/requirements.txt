@@ -1,0 +1,26 @@
+# Multi-Agent RL Football Demo - Requirements
+# ============================================
+
+# Core dependencies
+numpy>=1.24.0,<2.0.0
+torch>=2.0.0
+pettingzoo>=1.24.0
+
+# Visualization - Streamlit
+streamlit>=1.28.0
+plotly>=5.18.0
+imageio>=2.33.0
+Pillow>=10.1.0
+
+# Backend - FastAPI
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Utilities
+python-dotenv>=1.0.0

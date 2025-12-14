@@ -17,6 +17,7 @@ from collections import defaultdict
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from env.football_env import FootballEnv
+from easy_start_env import EasyStartEnv  # 🎯 Curriculum learning
 from models.ppo_agent import PPOAgent
 from training.buffer import MultiAgentBuffer
 from training.utils import LinearSchedule, EpisodeStats
@@ -84,13 +85,24 @@ class Trainer:
         )
         print(f"Using device: {self.device}")
         
-        # Create environment
-        self.env = FootballEnv(
-            num_agents_per_team=config['num_agents_per_team'],
-            grid_width=config['grid_width'],
-            grid_height=config['grid_height'],
-            max_steps=config['max_steps']
-        )
+        # Create environment - use curriculum if specified
+        use_curriculum = config.get('use_curriculum', False)
+        if use_curriculum:
+            print("🎯 Using EASY START curriculum environment")
+            self.env = EasyStartEnv(
+                num_agents_per_team=config['num_agents_per_team'],
+                grid_width=config['grid_width'],
+                grid_height=config['grid_height'],
+                max_steps=config['max_steps'],
+                difficulty='easy'
+            )
+        else:
+            self.env = FootballEnv(
+                num_agents_per_team=config['num_agents_per_team'],
+                grid_width=config['grid_width'],
+                grid_height=config['grid_height'],
+                max_steps=config['max_steps']
+            )
         
         # Get observation and action dimensions
         agent = self.env.agents[0]

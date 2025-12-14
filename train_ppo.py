@@ -85,12 +85,25 @@ class Trainer:
         print(f"Using device: {self.device}")
         
         # Create environment
-        self.env = FootballEnv(
-            num_agents_per_team=config['num_agents_per_team'],
-            grid_width=config['grid_width'],
-            grid_height=config['grid_height'],
-            max_steps=config['max_steps']
-        )
+        if config.get('use_improved_env', False):
+            from env.improved_football_env import ImprovedFootballEnv
+            self.env = ImprovedFootballEnv(
+                num_agents_per_team=config['num_agents_per_team'],
+                grid_width=config['grid_width'],
+                grid_height=config['grid_height'],
+                max_steps=config['max_steps'],
+                movement_speed=config.get('movement_speed', 0.5),
+                shoot_range=config.get('shoot_range', 3.0),
+                pass_range=config.get('pass_range', 4.0),
+                debug=False
+            )
+        else:
+            self.env = FootballEnv(
+                num_agents_per_team=config['num_agents_per_team'],
+                grid_width=config['grid_width'],
+                grid_height=config['grid_height'],
+                max_steps=config['max_steps']
+            )
         
         # Get observation and action dimensions
         agent = self.env.agents[0]
@@ -191,9 +204,16 @@ class Trainer:
             
             # Step environment
             for agent in self.env.agent_iter():
-                observation, reward, termination, truncation, info = self.env.step(
+                obs_dict, rewards_dict, terminations_dict, truncations_dict, infos_dict = self.env.step(
                     actions[agent]
                 )
+                
+                # Extract this agent's data
+                observation = obs_dict.get(agent, observations[agent])
+                reward = rewards_dict.get(agent, 0)
+                termination = terminations_dict.get(agent, False)
+                truncation = truncations_dict.get(agent, False)
+                info = infos_dict.get(agent, {})
                 
                 episode_rewards[agent] += reward
                 observations[agent] = observation
@@ -232,11 +252,11 @@ class Trainer:
         return {
             'team_0_reward': team_0_reward,
             'team_1_reward': team_1_reward,
-            'team_0_goals': stats['goals_team_0'],
-            'team_1_goals': stats['goals_team_1'],
-            'passes': stats['passes'],
-            'successful_passes': stats['successful_passes'],
-            'shots': stats['shots'],
+            'team_0_goals': stats.get('goals_team_0', 0),
+            'team_1_goals': stats.get('goals_team_1', 0),
+            'passes': stats.get('passes', 0),
+            'successful_passes': stats.get('successful_passes', 0),
+            'shots': stats.get('shots', stats.get('shots_team_0', 0) + stats.get('shots_team_1', 0)),
             'episode_steps': episode_steps
         }
     
@@ -247,6 +267,10 @@ class Trainer:
             new_entropy_coef = self.entropy_schedule.value(episode)
             self.team_0_agent.entropy_coef = new_entropy_coef
             self.team_1_agent.entropy_coef = new_entropy_coef
+        else:
+            # Use agent's built-in entropy decay if configured
+            self.team_0_agent.update_entropy_coefficient()
+            self.team_1_agent.update_entropy_coefficient()
         
         # Update team 0
         buffer_0 = self.team_0_buffer.get_all_training_data()
